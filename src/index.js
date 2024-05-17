@@ -1,16 +1,19 @@
 require('./index.css');
 
-import { IconDelimiter } from '@codexteam/icons';
+const delimiterIcon = require('./icons/delimiter.js');
+const asteriskIcon = require('./icons/asterisk.js');
+const getLineWidthIcon = require('./icons/line.js');
+const getThicknessIcon = require('./icons/thickness.js');
 
 /**
  * Delimiter plugin for Editor.js
  * Supported config:
  *     * defaultStyle {string} (Default: 'star')
- *     * styles {string[]} (Default: Delimiter.DELIMITER_STYLES)
+ *     * styleOptions {string[]} (Default: Delimiter.DELIMITER_STYLES)
  *     * defaultLineWidth {number} (Default: 25)
- *     * lineWidths {number[]} (Default: Delimiter.LINE_WIDTHS)
+ *     * lineWidthOptions {number[]} (Default: Delimiter.SUPPORTED_LINE_WIDTHS)
  *     * defaultLineThickness {string} (Default: '1px')
- *     * lineThickness {string[]} (Default: Delimiter.LINE_THICKNESS)
+ *     * lineThicknessOptions {string[]} (Default: Delimiter.LINE_THICKNESS)
  *
  * @class Delimiter
  * @typedef {Delimiter}
@@ -25,7 +28,7 @@ export default class Delimiter {
    */
   static get toolbox() {
     return {
-      icon: IconDelimiter, title: 'Delimiter',
+      icon: delimiterIcon, title: 'Delimiter',
     };
   }
 
@@ -69,7 +72,7 @@ export default class Delimiter {
    * @readonly
    * @type {number[]}
    */
-  static get LINE_WIDTHS() {
+  static get SUPPORTED_LINE_WIDTHS() {
     return [8, 15, 25, 35, 50, 60, 100];
   }
 
@@ -135,8 +138,8 @@ export default class Delimiter {
     this._data = this._normalizeData(data);
     this._CSS = {
       block: this._api.styles.block,
-      wrapper: 'cb-delimiter',
-      wrapperForStyle: (style) => `cb-delimiter-${style}`,
+      wrapper: 'ce-delimiter',
+      wrapperForStyle: (style) => `ce-delimiter-${style}`,
     };
     this._element = this._getElement();
   }
@@ -149,8 +152,8 @@ export default class Delimiter {
    * @type {string[]}
    */
   get availableDelimiterStyles() {
-    return this._config.styles ? Delimiter.DELIMITER_STYLES.filter(
-      (style) => this._config.styles.includes(style),
+    return this._config.styleOptions ? Delimiter.DELIMITER_STYLES.filter(
+      (style) => this._config.styleOptions.includes(style),
     ) : Delimiter.DELIMITER_STYLES;
   }
 
@@ -183,9 +186,9 @@ export default class Delimiter {
    * @type {number[]}
    */
   get availableLineWidths() {
-    return this._config.lineWidths ? Delimiter.LINE_WIDTHS.filter(
-      (width) => this._config.lineWidths.includes(width),
-    ) : Delimiter.LINE_WIDTHS;
+    return this._config.lineWidthOptions ? Delimiter.SUPPORTED_LINE_WIDTHS.filter(
+      (width) => this._config.lineWidthOptions.includes(width),
+    ) : Delimiter.SUPPORTED_LINE_WIDTHS;
   }
 
   /**
@@ -217,8 +220,8 @@ export default class Delimiter {
    * @type {string[]}
    */
   get availableLineThickness() {
-    return this._config.lineThickness ? Delimiter.LINE_THICKNESS.filter(
-      (thickness) => this._config.lineThickness.includes(thickness),
+    return this._config.lineThicknessOptions ? Delimiter.LINE_THICKNESS.filter(
+      (thickness) => this._config.lineThicknessOptions.includes(thickness),
     ) : Delimiter.LINE_THICKNESS;
   }
 
@@ -306,19 +309,22 @@ export default class Delimiter {
   }
 
   createChildElement() {
+    const delimiterMap = {
+      'star': '***',
+      'dash': '———'
+    };
+
     let child;
-    if (this.currentDelimiterStyle === 'star') {
+
+    if (this.currentDelimiterStyle in delimiterMap) {
       child = document.createElement('span');
-      child.textContent = '***';
-      return child;
-    } if (this.currentDelimiterStyle === 'dash') {
-      child = document.createElement('span');
-      child.textContent = '———';
-      return child;
+      child.textContent = delimiterMap[this.currentDelimiterStyle];
+    } else {
+      child = document.createElement('hr');
+      child.style.width = `${this.currentLineWidth}%`;
+      child.style.borderWidth = this.currentLineThickness;
     }
-    child = document.createElement('hr');
-    child.style.width = `${this.currentLineWidth}%`;
-    child.style.borderWidth = this.currentLineThickness;
+
     return child;
   }
 
@@ -339,18 +345,23 @@ export default class Delimiter {
   }
 
   /**
+   * Replace the current element with a new one
+   */
+  _replaceElement() {
+    if (this._element.parentNode) {
+      const newElement = this._getElement();
+      this._element.parentNode.replaceChild(newElement, this._element);
+      this._element = newElement;
+    }
+  }
+
+  /**
    * Callback for Delimiter style change to star
    */
   _setStar() {
     if (this.currentDelimiterStyle !== 'star') {
       this._data.style = 'star';
-
-      // Replace hr child with span child
-      if (this._element.parentNode) {
-        const newElement = this._getElement();
-        this._element.parentNode.replaceChild(newElement, this._element);
-        this._element = newElement;
-      }
+      this._replaceElement();
     }
   }
 
@@ -360,18 +371,12 @@ export default class Delimiter {
   _setDash() {
     if (this.currentDelimiterStyle !== 'dash') {
       this._data.style = 'dash';
-
-      // Replace hr child with span child
-      if (this._element.parentNode) {
-        const newElement = this._getElement();
-        this._element.parentNode.replaceChild(newElement, this._element);
-        this._element = newElement;
-      }
+      this._replaceElement();
     }
   }
 
   /**
-   * Callback for Delimiter style change to line or line width change
+   * Callback for Delimiter style change (to line) or line width change
    *
    * @param {number} newWidth
    */
@@ -380,17 +385,13 @@ export default class Delimiter {
 
     if (this.currentDelimiterStyle !== 'line') {
       this._data.style = 'line';
-
-      // Replace span child with hr child
-      if (this._element.parentNode) {
-        const newElement = this._getElement();
-        this._element.parentNode.replaceChild(newElement, this._element);
-        this._element = newElement;
-      }
+      this._replaceElement();
     } else {
       // Change hr width
       const hrElement = this._element.querySelector('hr');
-      hrElement.style.width = `${newWidth}%`;
+      if (hrElement) {
+        hrElement.style.width = `${newWidth}%`;
+      }
     }
   }
 
@@ -404,7 +405,9 @@ export default class Delimiter {
 
     // Change hr thickness
     const hrElement = this._element.querySelector('hr');
-    hrElement.style.borderWidth = newThickness;
+    if (hrElement) {
+      hrElement.style.borderWidth = newThickness;
+    }
   }
 
   /**
@@ -423,55 +426,54 @@ export default class Delimiter {
    * @returns {{ style: string; lineWidth: number; lineThickness: string; }}
    */
   save() {
+    if (this.currentDelimiterStyle === 'line') {
+      return {
+        style: this.currentDelimiterStyle,
+        lineWidth: this.currentLineWidth,
+        lineThickness: this.currentLineThickness,
+      };
+    }
     return {
-      style: this.currentDelimiterStyle,
-      lineWidth: this.currentLineWidth,
-      lineThickness: this.currentLineThickness,
+      style: this.currentDelimiterStyle
     };
   }
 
   /**
-   * Block Tunes Menu items
+   * Block settings menu items
    *
    * @returns {[{*}]}
    */
   renderSettings() {
-    const starStyle = [{
-      icon: IconDelimiter,
-      label: 'Star',
-      onActivate: () => this._setStar(),
-      isActive: this.currentDelimiterStyle === 'star',
+    const createStyleSetting = (icon, label, onActivate, isActive, style) => ({
+      icon,
+      label,
+      onActivate,
+      isActive,
       closeOnActivate: true,
-      toggle: 'star',
-    }];
-    const dashStyle = [{
-      icon: IconDelimiter,
-      label: 'Dash',
-      onActivate: () => this._setDash(),
-      isActive: this.currentDelimiterStyle === 'dash',
-      closeOnActivate: true,
-      toggle: 'dash',
-    }];
-    const lineWidths = this.availableLineWidths.map((width) => ({
-      icon: IconDelimiter,
-      label: `Line ${width}%`,
-      onActivate: () => this._setLine(width),
-      isActive: this.currentDelimiterStyle === 'line' && width === this.currentLineWidth,
-      closeOnActivate: true,
-      toggle: 'line',
-    }));
+      toggle: style,
+    });
+
+    const starStyle = createStyleSetting(
+      asteriskIcon, 'Star', () => this._setStar(), this.currentDelimiterStyle === 'star', 'star'
+    );
+    const dashStyle = createStyleSetting(
+      delimiterIcon, 'Dash', () => this._setDash(), this.currentDelimiterStyle === 'dash', 'dash'
+    );
+    const lineWidths = this.availableLineWidths.map(width => 
+      createStyleSetting(
+        getLineWidthIcon(width), `Line ${width}%`, () => this._setLine(width), 
+        this.currentDelimiterStyle === 'line' && width === this.currentLineWidth, 'line'
+      )
+    );
     let lineThickness = [];
     if (this.currentDelimiterStyle === 'line') {
-      lineThickness = this.availableLineThickness.map((thickness) => ({
-        icon: IconDelimiter,
-        label: `Thickness ${parseInt(parseFloat(thickness) * 2, 10)}`,
-        onActivate: () => this._setLineThickness(thickness),
-        isActive: thickness === this.currentLineThickness,
-        closeOnActivate: true,
-        toggle: 'thickness',
-      }));
+      lineThickness = this.availableLineThickness.map(thickness => 
+        createStyleSetting(
+          getThicknessIcon(thickness), `Thickness ${parseInt(parseFloat(thickness) * 2, 10)}`, 
+          () => this._setLineThickness(thickness), thickness === this.currentLineThickness, 'thickness')
+      );
     }
 
-    return [...starStyle, ...dashStyle, ...lineWidths, ...lineThickness];
+    return [starStyle, dashStyle, ...lineWidths, ...lineThickness];
   }
 }

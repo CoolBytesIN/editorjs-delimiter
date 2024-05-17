@@ -1,17 +1,20 @@
 {
-  "name": "@coolbytes/npm-webpack-template",
-  "description": "Some Tool description",
+  "name": "@coolbytes/editorjs-delimiter",
+  "description": "Delimiter block tool for Editor.js",
   "version": "1.0.0",
   "private": false,
-  "homepage": "https://github.com/CoolBytesIN/npm-webpack-template#README.md",
+  "homepage": "https://apps.coolbytes.in/editorjs-delimiter",
   "license": "MIT",
   "author": {
     "name": "Cool Bytes",
     "email": "57877111+CoolBytesIN@users.noreply.github.com"
   },
   "keywords": [
-    "Keyword1",
-    "Keyword2"
+    "editor.js",
+    "editorjs",
+    "codex editor",
+    "coolbytes",
+    "delimiter"
   ],
   "main": "dist/bundle.js",
   "module": "dist/bundle.js",
@@ -21,18 +24,14 @@
   ],
   "scripts": {
     "build": "yarn install && yarn webpack",
-    "login": "npm login",
-    "publish": "npm publish"
+    "ready": "npm login"
   },
   "bugs": {
-    "url": "https://github.com/CoolBytesIN/npm-webpack-template/issues"
+    "url": "https://github.com/CoolBytesIN/editorjs-delimiter/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CoolBytesIN/npm-webpack-template.git"
-  },
-  "dependencies": {
-    "@codexteam/icons": "^0.3.0"
+    "url": "git+https://github.com/CoolBytesIN/editorjs-delimiter.git"
   },
   "devDependencies": {
     "@babel/core": "^7.24.5",

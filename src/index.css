@@ -1,4 +1,4 @@
-.cb-delimiter {
+.ce-delimiter {
 	line-height: 1.6em;
 	width: 100%;
 	text-align: center;
@@ -6,7 +6,7 @@
 }
 
 /* Delimiter styles */
-.cb-delimiter-star span {
+.ce-delimiter-star span {
 	font-size: 30px;
 	line-height: 65px;
 	display: inline-block;
@@ -14,14 +14,14 @@
 	letter-spacing: 0.2em;
 	font-weight: 900;
 }
-.cb-delimiter-dash span {
+.ce-delimiter-dash span {
 	margin: 10px;
 	display: inline-block;
 	height: 30px;
 	letter-spacing: 0.6em;
 	font-weight: 900;
 }
-.cb-delimiter-line hr {
+.ce-delimiter-line hr {
 	font-size: 48px;
 	border-style: solid;
 	border-color: black;

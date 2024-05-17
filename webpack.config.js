@@ -1,8 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  mode: 'production', // Set mode to 'production' or 'development'
-  entry: './src/index.js', // Entry file of your package
+  mode: 'production',
+  entry: './src/index.js',
   module: {
     rules: [
       {
@@ -24,11 +24,11 @@ module.exports = {
     ],
   },
   output: {
-    path: path.resolve(__dirname, 'dist'), // Output directory
-    filename: 'bundle.js', // Output bundle filename
-    library: 'Delimiter', // Exported library name
-    libraryTarget: 'umd', // Universal Module Definition
-    libraryExport: 'default', // Default exports are needed for Editor.js
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js',
+    library: 'Delimiter',
+    libraryTarget: 'umd',
+    libraryExport: 'default',
     umdNamedDefine: true,
   },
 };
