@@ -1,0 +1,29 @@
+.cb-delimiter {
+	line-height: 1.6em;
+	width: 100%;
+	text-align: center;
+	color: black;
+}
+
+/* Delimiter styles */
+.cb-delimiter-star span {
+	font-size: 30px;
+	line-height: 65px;
+	display: inline-block;
+	height: 30px;
+	letter-spacing: 0.2em;
+	font-weight: 900;
+}
+.cb-delimiter-dash span {
+	margin: 10px;
+	display: inline-block;
+	height: 30px;
+	letter-spacing: 0.6em;
+	font-weight: 900;
+}
+.cb-delimiter-line hr {
+	font-size: 48px;
+	border-style: solid;
+	border-color: black;
+	border-radius: 3px;
+}
