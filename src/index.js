@@ -12,8 +12,8 @@ const getThicknessIcon = require('./icons/thickness.js');
  *     * styleOptions {string[]} (Default: Delimiter.DELIMITER_STYLES)
  *     * defaultLineWidth {number} (Default: 25)
  *     * lineWidthOptions {number[]} (Default: Delimiter.SUPPORTED_LINE_WIDTHS)
- *     * defaultLineThickness {string} (Default: '1px')
- *     * lineThicknessOptions {string[]} (Default: Delimiter.LINE_THICKNESS)
+ *     * defaultLineThickness {number} (Default: 2)
+ *     * lineThicknessOptions {number[]} (Default: Delimiter.LINE_THICKNESS)
  *
  * @class Delimiter
  * @typedef {Delimiter}
@@ -92,10 +92,10 @@ export default class Delimiter {
    *
    * @static
    * @readonly
-   * @type {string[]}
+   * @type {number[]}
    */
   static get LINE_THICKNESS() {
-    return ['0.5px', '1px', '1.5px', '2px', '2.5px', '3px'];
+    return [1, 2, 3, 4, 5, 6];
   }
 
   /**
@@ -103,10 +103,10 @@ export default class Delimiter {
    *
    * @static
    * @readonly
-   * @type {string}
+   * @type {number}
    */
   static get DEFAULT_LINE_THICKNESS() {
-    return '1px';
+    return 2;
   }
 
   /**
@@ -140,6 +140,7 @@ export default class Delimiter {
       block: this._api.styles.block,
       wrapper: 'ce-delimiter',
       wrapperForStyle: (style) => `ce-delimiter-${style}`,
+      wrapperForThickness: (thickness) => `ce-delimiter-thickness-${thickness}`,
     };
     this._element = this._getElement();
   }
@@ -217,7 +218,7 @@ export default class Delimiter {
    * - Finds intersection between supported and user selected line thickness options
    *
    * @readonly
-   * @type {string[]}
+   * @type {number[]}
    */
   get availableLineThickness() {
     return this._config.lineThicknessOptions ? Delimiter.LINE_THICKNESS.filter(
@@ -230,7 +231,7 @@ export default class Delimiter {
    * - Finds union of user choice and the actual default
    *
    * @readonly
-   * @type {string}
+   * @type {number}
    */
   get userDefaultLineThickness() {
     if (this._config.defaultLineThickness) {
@@ -250,7 +251,7 @@ export default class Delimiter {
    * To normalize input data
    *
    * @param {*} data
-   * @returns {{ style: string; lineWidth: number; lineThickness: string; }}
+   * @returns {{ style: string; lineWidth: number; lineThickness: number; }}
    */
   _normalizeData(data) {
     const newData = {};
@@ -260,7 +261,7 @@ export default class Delimiter {
 
     newData.style = data.style || this.userDefaultDelimiterStyle;
     newData.lineWidth = parseInt(data.lineWidth, 10) || this.userDefaultLineWidth;
-    newData.lineThickness = data.lineThickness || this.userDefaultLineThickness;
+    newData.lineThickness = parseInt(data.lineThickness, 10) || this.userDefaultLineThickness;
     return newData;
   }
 
@@ -296,7 +297,7 @@ export default class Delimiter {
    * Current thickness for delimiter line style
    *
    * @readonly
-   * @type {string}
+   * @type {number}
    */
   get currentLineThickness() {
     let lineThickness = this.availableLineThickness.find(
@@ -308,7 +309,13 @@ export default class Delimiter {
     return lineThickness;
   }
 
-  createChildElement() {
+  
+  /**
+   * Create a child element of the block parent
+   *
+   * @returns {*}
+   */
+  _createChildElement() {
     const delimiterMap = {
       'star': '***',
       'dash': '———'
@@ -322,7 +329,7 @@ export default class Delimiter {
     } else {
       child = document.createElement('hr');
       child.style.width = `${this.currentLineWidth}%`;
-      child.style.borderWidth = this.currentLineThickness;
+      child.classList.add(this._CSS.wrapperForThickness(this.currentLineThickness));
     }
 
     return child;
@@ -340,7 +347,7 @@ export default class Delimiter {
       this._CSS.block,
       this._CSS.wrapperForStyle(this.currentDelimiterStyle),
     );
-    div.appendChild(this.createChildElement());
+    div.appendChild(this._createChildElement());
     return div;
   }
 
@@ -398,7 +405,7 @@ export default class Delimiter {
   /**
    * Callback for line thickness change
    *
-   * @param {string} newThickness
+   * @param {number} newThickness
    */
   _setLineThickness(newThickness) {
     this._data.lineThickness = newThickness;
@@ -406,7 +413,17 @@ export default class Delimiter {
     // Change hr thickness
     const hrElement = this._element.querySelector('hr');
     if (hrElement) {
-      hrElement.style.borderWidth = newThickness;
+      Delimiter.LINE_THICKNESS.forEach((thickness) => {
+        const thicknessClass = this._CSS.wrapperForThickness(thickness);
+  
+        // Remove the old thickness class
+        hrElement.classList.remove(thicknessClass);
+  
+        if (newThickness === thickness) {
+          // Add the new thickness class
+          hrElement.classList.add(thicknessClass);
+        }
+      });
     }
   }
 
@@ -423,7 +440,7 @@ export default class Delimiter {
    * Editor.js save method to extract block data from the UI
    *
    * @param {*} blockContent
-   * @returns {{ style: string; lineWidth: number; lineThickness: string; }}
+   * @returns {{ style: string; lineWidth: number; lineThickness: number; }}
    */
   save() {
     if (this.currentDelimiterStyle === 'line') {
@@ -493,7 +510,7 @@ export default class Delimiter {
     if (this.currentDelimiterStyle === 'line') {
       lineThickness = this.availableLineThickness.map(thickness => 
         this._createSetting(
-          getThicknessIcon(thickness), this._getFormattedLabel(parseInt(parseFloat(thickness) * 2, 10), 'Thickness '), 
+          getThicknessIcon(thickness), this._getFormattedLabel(thickness, 'Thickness '), 
           () => this._setLineThickness(thickness), thickness === this.currentLineThickness, 'thickness')
       );
     }

@@ -44,8 +44,8 @@ const editor = new EditorJS({
 |defaultStyle|`string`|`Yes`|'star'|Preferred delimiter style|
 |lineWidthOptions|`number[]`|`Yes`|[8, 15, 25, 35, 50, 60, 100]|All supported line width options (%). Applicable for 'line' style only|
 |defaultLineWidth|`number`|`Yes`|25|Preferred line width. Applicable for 'line' style only|
-|lineThicknessOptions|`string[]`|`Yes`|['0.5px', '1px', '1.5px', '2px', '2.5px', '3px']|All supported line thickness options (px). Applicable for 'line' style only|
-|defaultLineThickness|`string`|`Yes`|'1px'|Preferred line thickness. Applicable for 'line' style only|
+|lineThicknessOptions|`number[]`|`Yes`|[1, 2, 3, 4, 5, 6]|All supported line thickness options. Applicable for 'line' style only|
+|defaultLineThickness|`number`|`Yes`|2|Preferred line thickness. Applicable for 'line' style only|
 
 &nbsp;
 
@@ -59,8 +59,8 @@ const editor = EditorJS({
         defaultStyle: 'star',
         lineWidthOptions: [8, 15, 25, 35, 50, 60, 100],
         defaultLineWidth: 25,
-        lineThicknessOptions: ['0.5px', '1px', '1.5px', '2px', '2.5px', '3px'],
-        defaultLineThickness: '1px',
+        lineThicknessOptions: [1, 2, 3, 4, 5, 6],
+        defaultLineThickness: 2,
       }
     }
   }
@@ -73,7 +73,7 @@ const editor = EditorJS({
 |---|---|---|---|
 |style|`string`|**All Styles**|Delimiter Style|
 |lineWidth|`number`|`line`|Width of line style delimiter|
-|lineThickness|`string`|`line`|Thickness of line style delimiter|
+|lineThickness|`number`|`line`|Thickness of line style delimiter|
 
 &nbsp;
 
@@ -88,8 +88,8 @@ Example:
       "type": "delimiter",
       "data": {
         "style": "line",
-        "lineWidth": 15,
-        "lineThickness": "2px"
+        "lineWidth": 25,
+        "lineThickness": 2
       }
     }
   ],
