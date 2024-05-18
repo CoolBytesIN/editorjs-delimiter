@@ -439,37 +439,61 @@ export default class Delimiter {
   }
 
   /**
+   * Get formatted label for Block settings menu
+   *
+   * @param {string} name
+   * @param {string} prefix
+   * @returns {string}
+   */
+  _getFormattedLabel(name, prefix, suffix) {
+    if (prefix || suffix) {
+      return this._api.i18n.t(`${prefix || ''}${name}${suffix || ''}`);
+    }
+    return this._api.i18n.t(name.charAt(0).toUpperCase() + name.slice(1));
+  }
+
+  /**
+   * Create a Block menu setting
+   *
+   * @param {string} icon
+   * @param {string} label
+   * @param {*} onActivate
+   * @param {boolean} isActive
+   * @param {string} group
+   * @returns {{ icon: string; label: string; onActivate: any; isActive: boolean; closeOnActivate: boolean; toggle: string; }}
+   */
+  _createSetting = (icon, label, onActivate, isActive, group) => ({
+    icon,
+    label,
+    onActivate,
+    isActive,
+    closeOnActivate: true,
+    toggle: group,
+  });
+
+  /**
    * Block settings menu items
    *
    * @returns {[{*}]}
    */
   renderSettings() {
-    const createStyleSetting = (icon, label, onActivate, isActive, style) => ({
-      icon,
-      label,
-      onActivate,
-      isActive,
-      closeOnActivate: true,
-      toggle: style,
-    });
-
-    const starStyle = createStyleSetting(
+    const starStyle = this._createSetting(
       asteriskIcon, 'Star', () => this._setStar(), this.currentDelimiterStyle === 'star', 'star'
     );
-    const dashStyle = createStyleSetting(
+    const dashStyle = this._createSetting(
       delimiterIcon, 'Dash', () => this._setDash(), this.currentDelimiterStyle === 'dash', 'dash'
     );
     const lineWidths = this.availableLineWidths.map(width => 
-      createStyleSetting(
-        getLineWidthIcon(width), `Line ${width}%`, () => this._setLine(width), 
+      this._createSetting(
+        getLineWidthIcon(width), this._getFormattedLabel(width, 'Line ', '%'), () => this._setLine(width), 
         this.currentDelimiterStyle === 'line' && width === this.currentLineWidth, 'line'
       )
     );
     let lineThickness = [];
     if (this.currentDelimiterStyle === 'line') {
       lineThickness = this.availableLineThickness.map(thickness => 
-        createStyleSetting(
-          getThicknessIcon(thickness), `Thickness ${parseInt(parseFloat(thickness) * 2, 10)}`, 
+        this._createSetting(
+          getThicknessIcon(thickness), this._getFormattedLabel(parseInt(parseFloat(thickness) * 2, 10), 'Thickness '), 
           () => this._setLineThickness(thickness), thickness === this.currentLineThickness, 'thickness')
       );
     }
