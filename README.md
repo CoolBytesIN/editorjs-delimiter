@@ -5,10 +5,10 @@ This [Editor.js](https://editorjs.io/) block tool extends [@editorjs/delimiter](
 ## Preview
 
 #### Block Tool
-![delimiter](https://api.coolbytes.in/media/handle/view/image/296/)
+![delimiter](https://api.coolbytes.in/media/handle/view/image/e239ac92-3cc4-44a0-9057-69da18ebf66d/)
 
 #### Block Settings
-![settings](https://api.coolbytes.in/media/handle/view/image/297/)
+![settings](https://api.coolbytes.in/media/handle/view/image/3f5be944-b88f-47e6-93ef-a20adb06c9cf/)
 
 ## Installation
 
