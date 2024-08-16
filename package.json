@@ -1,7 +1,7 @@
 {
   "name": "@coolbytes/editorjs-delimiter",
   "description": "Delimiter block tool for Editor.js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": false,
   "homepage": "https://apps.coolbytes.in/editorjs-delimiter",
   "license": "MIT",
