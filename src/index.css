@@ -22,6 +22,7 @@
 	font-weight: 900;
 }
 .ce-delimiter-line hr {
+	display: inline-block;
 	font-size: 48px;
 	border-style: solid;
 	border-color: black;
